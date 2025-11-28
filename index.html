@@ -1,40 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Link Downloader</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/1828/1828490.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Media Downloader</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    body {
+      background: linear-gradient(120deg, #3a1c71, #d76d77, #ffaf7b);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-size: 400% 400%;
+      animation: gradient 10s ease infinite;
+    }
+
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .glass {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(15px);
+      border-radius: 20px;
+      padding: 25px;
+      width: 450px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      color: white;
+      text-align: center;
+    }
+
+    #result iframe {
+      border-radius: 12px;
+      margin-top: 15px;
+    }
+
+    .spinner-border {
+      margin-top: 15px;
+    }
+
+  </style>
 </head>
-<body class="bg-light">
+<body>
 
-<div class="container mt-5">
-    <div class="card shadow p-4">
-        <h2 class="text-center mb-3">🔗 Direct Link Downloader</h2>
+<div class="glass">
+  <h2><i class="fa-solid fa-download"></i> Media Downloader</h2>
+  <p style="opacity: .8;">Paste link YouTube atau URL lain di bawah</p>
 
-        <input type="url" id="url" class="form-control" placeholder="Tempel link di sini...">
+  <input type="text" id="link" class="form-control mt-3" placeholder="https://youtube.com/...">
 
-        <button class="btn btn-primary w-100 mt-3" onclick="generateDownload()">Generate Download Link</button>
+  <select id="format" class="form-select mt-3">
+    <option value="mp4">🎥 MP4 (Video)</option>
+    <option value="mp3">🎧 MP3 (Audio)</option>
+  </select>
 
-        <div id="result" class="mt-4"></div>
-    </div>
+  <button onclick="getDownload()" class="btn btn-light mt-3 w-100 fw-bold">
+    <i class="fa-solid fa-magnifying-glass-arrow-right"></i> Generate Link
+  </button>
+
+  <div id="loader" class="d-none">
+    <div class="spinner-border text-light" role="status"></div>
+    <p>Fetching download link...</p>
+  </div>
+
+  <div id="result"></div>
 </div>
 
-<script>
-function generateDownload() {
-    const link = document.getElementById("url").value;
-    const result = document.getElementById("result");
 
-    if (!link) {
-        result.innerHTML = `<div class='alert alert-danger'>❌ Masukkan link dulu!</div>`;
-        return;
-    }
-    
+<script>
+async function getDownload() {
+  let url = document.getElementById("link").value;
+  let format = document.getElementById("format").value;
+  let result = document.getElementById("result");
+  let loader = document.getElementById("loader");
+
+  if (!url) {
+    result.innerHTML = "<p class='text-warning mt-3'>⚠ Masukkan link terlebih dahulu!</p>";
+    return;
+  }
+
+  loader.classList.remove("d-none");
+  result.innerHTML = "";
+
+  setTimeout(() => {
+    loader.classList.add("d-none");
+
+    let apiUrl = `https://api.vevioz.com/api/button/${format}/${encodeURIComponent(url)}`;
+
     result.innerHTML = `
-        <div class='alert alert-success'>Link siap diunduh 👍</div>
-        <a class="btn btn-success w-100" href="${link}" download>⬇ Download Sekarang</a>
+      <div class="mt-3">
+        <p class='fw-bold'>Download Link Ready 🎉</p>
+        <iframe src="${apiUrl}" width="100%" height="300"></iframe>
+      </div>
     `;
+  }, 2000);
 }
 </script>
 
